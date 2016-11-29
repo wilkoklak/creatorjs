@@ -4,16 +4,14 @@ if(!window.console.error) {
 if(!window.console.warn) {
 	window.console.warn = window.console.log;
 }
-
-function _isType(variable, type) {
-	if(variable.constructor.toString().indexOf(type) != -1) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 var creator = {
+	_isType: function(variable, type) {
+		if(variable && type && variable.constructor.toString().indexOf(type) != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	},
 	_GLOBAL_ATTRIBUTES: [
 		'accesskey',
 		'class',
@@ -38,8 +36,8 @@ var creator = {
 				console.error('Error: you must specify class name(s)!');
 				return false;
 			} else {
-				for(i = 0; i < arguments.length; i++) {
-					if(_isType(arguments[i], 'String')) {
+				for(let i = 0, len = arguments.length; i < len; i++) {
+					if(creator._isType(arguments[i], 'String')) {
 						this._inDom.classList.add(arguments[i]);
 					} else {
 						console.error('Error: <<className>> must be a String!');
@@ -54,8 +52,8 @@ var creator = {
 				console.error('Error: you must specify a class name(s)!');
 				return false;
 			} else {
-				if(_isType(className, 'String')) {
-					this._inDom.classList.remove('')
+				if(creator._isType(className, 'String')) {
+					this._inDom.classList.remove(className);
 				}
 			}
 		}
@@ -64,7 +62,7 @@ var creator = {
 				console.error('Error: you must specify an id name!');
 				return false;
 			} else {
-				if(_isType(id, 'String')) {
+				if(creator._isType(id, 'String')) {
 					this._inDom.id = id;
 				} else {
 					console.error('Error: <<id>> must be a String!');
@@ -86,7 +84,7 @@ var creator = {
 	create: function(tag, options) {
 		var elem;
 		if(tag) {
-			if(_isType(tag, 'String')) {
+			if(creator._isType(tag, 'String')) {
 				elem = new this.Elem(tag);
 			} else {
 				console.error('Error: <<tag>> must be a string!');
@@ -97,16 +95,22 @@ var creator = {
 			return false;
 		}
 		if(options) {
-			if(_isType(options, 'Object')) {
+			if(creator._isType(options, 'Object')) {
 				if(options.id) {
 					elem.setId(options.id);
 				}
 				if(options.className) {
-					elem.addClass(options.className);
+					if(creator._isType(options.className, 'String')) {
+						elem.addClass(options.className);
+					} else if(creator._isType(options.className, 'Array')) {
+						for(let i = 0, len = options.className.length; i < len; i++) {
+							elem.addClass(options.className[i]);
+						}
+					}
 				}
 				if(options.attr) {
 					let attr = options.attr;
-					if(_isType(attr, 'Object')) {
+					if(creator._isType(attr, 'Object')) {
 						for(var key in attr) {
 							if(attr.hasOwnProperty(key)) {
 								if(
@@ -127,7 +131,7 @@ var creator = {
 							return false;
 					}
 				}
-			} else if(_isType(options, 'String')) {
+			} else if(creator._isType(options, 'String')) {
 				if(options[0] == '.') {
 					elem.addClass(options.slice(1));
 				} else if(options[0] == '#') {
