@@ -33,24 +33,32 @@ var creator = {
 	],
 	Elem: function(tag) {
 		this._inDom = document.createElement(tag);
-		this._inDom.addClass = function(className) {
-			if(!className) {
-				console.error('Error: you must specify a class name!')
+		this._inDom.addClass = function() {
+			if(arguments.length == 0) {
+				console.error('Error: you must specify class name(s)!');
 				return false;
 			} else {
-				if(_isType(className, 'String')) {
-					this._inDom.classList.add(className);
-				} else if (_isType(className, 'Array')) {
-					for(i = 0; i < className.length; i++) {
-						this._inDom.classList.add(className[i]);
+				for(i = 0; i < arguments.length; i++) {
+					if(_isType(arguments[i], 'String')) {
+						this._inDom.classList.add(arguments[i]);
+					} else {
+						console.error('Error: <<className>> must be a String!');
+						return false;
 					}
-				} else {
-					console.error('Error: <<className>> must be a String or Array!');
-					return false;
 				}
 			}
 			return true;
 		}.bind(this);
+		this._inDom.removeClass = function(className) {
+			if(!className) {
+				console.error('Error: you must specify a class name(s)!');
+				return false;
+			} else {
+				if(_isType(className, 'String')) {
+					this._inDom.classList.remove('')
+				}
+			}
+		}
 		this._inDom.setId = function(id) {
 			if(!id) {
 				console.error('Error: you must specify an id name!');
@@ -63,6 +71,10 @@ var creator = {
 					return false;
 				}
 			}
+			return true;
+		}.bind(this);
+		this._inDom.removeId = function() {
+			this._inDom.removeAttribute('id');
 			return true;
 		}.bind(this);
 		return this._inDom;
@@ -133,10 +145,3 @@ var creator = {
 		return elem;
 	}
 }
-
-var x = creator.create('p', {
-	className: 'asd'
-});
-var a = creator.create('a', '.axd');
-document.body.appendChild(a);
-document.body.appendChild(x);
