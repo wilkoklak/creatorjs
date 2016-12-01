@@ -3,16 +3,83 @@
 <head>
 	<meta charset="utf-8">
 	<title>Test</title>
+	<style>
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		font-family: sans-serif;
+	}
+	.para {
+		font-size: 1.5em;
+	}
+	.bold {
+		font-weight: bold;
+	}
+	#image {
+		width: 300px;
+		height: auto;
+	}
+	.red {
+		color: #cc0000;
+	}
+	.green {
+		color: #00cc00;
+	}
+	.bigger {
+		font-size: 2em;
+	}
+	</style>
 </head>
 <body>
+<div id='container'></div>
 <script src='creator.js'></script>
 <script>
-var x = creator.create('p', {
-	className: ['asd', 'makapaka'],
-	id: 'kabanos'
+var container = document.querySelector('#container');
+
+// Correct examples
+var p = creator.create('p', {
+	className: ['para', 'bold'],
+	attributes: {
+		'data-test': 'test_value'
+	}
 });
-var a = creator.create('a', '.axd');
-document.body.appendChild(a);
-document.body.appendChild(x);
+
+// You can still use vanilla functions and values
+p.innerText = 'This is a demo paragraph!';
+
+var img = creator.create('img', {
+	id: 'image',
+	attributes: {
+		// src is not in global attributes list, so creator will throw a warning
+		src: 'http://i.imgur.com/MHMpQVY.jpg',
+		title: 'Some image from imgur...'
+	}
+})
+
+// This is a shorthand creation
+var red = creator.create('p', '.red');
+red.innerHTML = '<i>This text is red!</i>';
+
+setTimeout(function() {
+	red.innerHTML = "<i>It's no longer red :(</i>";
+	red.removeClass('red'); // you can remove specific classes
+}, 5000)
+
+setTimeout(function() {
+	red.innerText = "Now, I'm green and bigger!!!11!1";
+	red.addClass('green', 'bigger'); // you can add multiple classes at once
+}, 10000)
+
+container.appendChild(p);
+container.appendChild(img);
+p.appendChild(red);
+
+// Wrong examples
+var wrong = creator.create('p', 123); //will throw an error
+var another_wrong = creator.create(456, '.class'); //will throw an error
+
+// wrong and another_wrong now contain a false value
+container.appendChild(wrong); //will throw an error
 </script>
 </body>

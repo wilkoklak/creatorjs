@@ -38,7 +38,18 @@ var creator = {
 			} else {
 				for(let i = 0, len = arguments.length; i < len; i++) {
 					if(creator._isType(arguments[i], 'String')) {
-						this._inDom.classList.add(arguments[i]);
+						if(this._inDom.classLis) {
+							this._inDom.classList.add(arguments[i]);
+						} else {
+							let classes = this._inDom.className;
+							if(classes.indexOf(arguments[i]) == -1) {
+								if(classes != '') {
+									this._inDom.className += ' ' + arguments[i];
+								} else {
+									this._inDom.className = arguments[i];
+								}
+							}
+						}
 					} else {
 						console.error('Error: <<className>> must be a String!');
 						return false;
@@ -47,16 +58,31 @@ var creator = {
 			}
 			return true;
 		}.bind(this);
-		this._inDom.removeClass = function(className) {
-			if(!className) {
-				console.error('Error: you must specify a class name(s)!');
+		this._inDom.removeClass = function() {
+			if(arguments.length == 0) {
+				console.error('Error: you must specify class name(s)!');
 				return false;
 			} else {
-				if(creator._isType(className, 'String')) {
-					this._inDom.classList.remove(className);
+				for(let i = 0, len = arguments.length; i < len; i++) {
+					if(creator._isType(arguments[i], 'String')) {
+						if(this._inDom.classLis) {
+							this._inDom.classList.remove(arguments[i]);
+						} else {
+							var classes = this._inDom.className.split(' ');
+							var index = classes.indexOf(arguments[i]);
+							if(index > -1) {
+								classes.splice(index, 1);
+							}
+							this._inDom.className = classes.join(' ');
+						}
+					} else {
+						console.error('Error: <<className>> must be a String!');
+						return false;
+					}
 				}
+				return true;
 			}
-		}
+		}.bind(this);
 		this._inDom.setId = function(id) {
 			if(!id) {
 				console.error('Error: you must specify an id name!');
@@ -77,17 +103,13 @@ var creator = {
 		}.bind(this);
 		return this._inDom;
 	},
-	elements: [],
-	addClass: function(elem, className) {
-
-	},
 	create: function(tag, options) {
 		var elem;
 		if(tag) {
 			if(creator._isType(tag, 'String')) {
 				elem = new this.Elem(tag);
 			} else {
-				console.error('Error: <<tag>> must be a string!');
+				console.error('Error: <<tag>> must be a String!');
 				return false;
 			}
 		} else {
@@ -108,8 +130,8 @@ var creator = {
 						}
 					}
 				}
-				if(options.attr) {
-					let attr = options.attr;
+				if(options.attributes) {
+					let attr = options.attributes;
 					if(creator._isType(attr, 'Object')) {
 						for(var key in attr) {
 							if(attr.hasOwnProperty(key)) {
@@ -127,7 +149,7 @@ var creator = {
 							}
 						}
 					} else {
-						console.error('Error: <<attr>> must be an object!');
+						console.error('Error: <<attributes>> must be an object!');
 							return false;
 					}
 				}
@@ -143,9 +165,11 @@ var creator = {
 						"\nContinuing, but your code might not work!"
 					);
 				}
+			} else {
+				console.error('Error: <<options>> must be an Object or a String!');
+				return false;
 			}
 		}
-		this.elements.push(elem);
 		return elem;
 	}
 }
