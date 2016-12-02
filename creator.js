@@ -64,7 +64,7 @@ var creator = {
 			} else {
 				for(let i = 0, len = arguments.length; i < len; i++) {
 					if(creator._isType(arguments[i], 'String')) {
-						if(this._inDom.classLis) {
+						if(this._inDom.classList) {
 							this._inDom.classList.add(arguments[i]);
 						} else {
 							let classes = this._inDom.className;
@@ -91,7 +91,7 @@ var creator = {
 			} else {
 				for(let i = 0, len = arguments.length; i < len; i++) {
 					if(creator._isType(arguments[i], 'String')) {
-						if(this._inDom.classLis) {
+						if(this._inDom.classList) {
 							this._inDom.classList.remove(arguments[i]);
 						} else {
 							var classes = this._inDom.className.split(' ');
