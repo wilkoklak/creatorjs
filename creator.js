@@ -1,10 +1,36 @@
-if(!window.console.error) {
-	window.console.error = window.console.log;
-}
-if(!window.console.warn) {
-	window.console.warn = window.console.log;
-}
 var creator = {
+	config: {
+		errors: true,
+		warnings: true
+	},
+	_error: function() {
+		if(creator.config.errors){
+			var text = '';
+			for(let i = 0, len = arguments.length; i < len; i++) {
+				text += ' ' + arguments[i];
+			}
+			text = text.trim();
+			if(window.console.error) {
+				console.error(text);
+			} else {
+				console.log(text);
+			}
+		}
+	},
+	_warn: function() {
+		if(creator.config.warnings){
+			var text = '';
+			for(let i = 0, len = arguments.length; i < len; i++) {
+				text += ' ' + arguments[i];
+			}
+			text = text.trim();
+			if(window.console.warn) {
+				console.warn(text);
+			} else {
+				console.log(text);
+			}
+		}
+	},
 	_isType: function(variable, type) {
 		if(variable && type && variable.constructor.toString().indexOf(type) != -1) {
 			return true;
@@ -33,7 +59,7 @@ var creator = {
 		this._inDom = document.createElement(tag);
 		this._inDom.addClass = function() {
 			if(arguments.length == 0) {
-				console.error('Error: you must specify class name(s)!');
+				creator._error('Error: you must specify class name(s)!');
 				return false;
 			} else {
 				for(let i = 0, len = arguments.length; i < len; i++) {
@@ -51,7 +77,7 @@ var creator = {
 							}
 						}
 					} else {
-						console.error('Error: <<className>> must be a String!');
+						creator._error('Error: <<className>> must be a String!');
 						return false;
 					}
 				}
@@ -60,7 +86,7 @@ var creator = {
 		}.bind(this);
 		this._inDom.removeClass = function() {
 			if(arguments.length == 0) {
-				console.error('Error: you must specify class name(s)!');
+				creator._error('Error: you must specify class name(s)!');
 				return false;
 			} else {
 				for(let i = 0, len = arguments.length; i < len; i++) {
@@ -76,7 +102,7 @@ var creator = {
 							this._inDom.className = classes.join(' ');
 						}
 					} else {
-						console.error('Error: <<className>> must be a String!');
+						creator._error('Error: <<className>> must be a String!');
 						return false;
 					}
 				}
@@ -85,13 +111,13 @@ var creator = {
 		}.bind(this);
 		this._inDom.setId = function(id) {
 			if(!id) {
-				console.error('Error: you must specify an id name!');
+				creator._error('Error: you must specify an id name!');
 				return false;
 			} else {
 				if(creator._isType(id, 'String')) {
 					this._inDom.id = id;
 				} else {
-					console.error('Error: <<id>> must be a String!');
+					creator._error('Error: <<id>> must be a String!');
 					return false;
 				}
 			}
@@ -109,11 +135,11 @@ var creator = {
 			if(creator._isType(tag, 'String')) {
 				elem = new this.Elem(tag);
 			} else {
-				console.error('Error: <<tag>> must be a String!');
+				creator._error('Error: <<tag>> must be a String!');
 				return false;
 			}
 		} else {
-			console.error('Error: You must specify the tag name!');
+			creator._error('Error: You must specify the tag name!');
 			return false;
 		}
 		if(options) {
@@ -139,7 +165,8 @@ var creator = {
 									creator._GLOBAL_ATTRIBUTES.indexOf(key) == -1 &&
 									key.indexOf('data-') == -1
 								) {
-									console.warn(
+									creator._warn(
+										'Warning:',
 										key,
 										"isn't in the global attributes list.",
 										"make sure you know what you're doing :)"
@@ -149,8 +176,8 @@ var creator = {
 							}
 						}
 					} else {
-						console.error('Error: <<attributes>> must be an object!');
-							return false;
+						creator._error('Error: <<attributes>> must be an object!');
+						return false;
 					}
 				}
 			} else if(creator._isType(options, 'String')) {
@@ -159,14 +186,14 @@ var creator = {
 				} else if(options[0] == '#') {
 					elem.setId(options.slice(1));
 				} else {
-					console.warn(
+					creator._warn(
 						"Warning: You didn't specify if it's class or id!",
 						"Add '.' or '#' prefix!",
 						"\nContinuing, but your code might not work!"
 					);
 				}
 			} else {
-				console.error('Error: <<options>> must be an Object or a String!');
+				creator._error('Error: <<options>> must be an Object or a String!');
 				return false;
 			}
 		}
